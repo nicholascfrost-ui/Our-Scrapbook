@@ -50,6 +50,7 @@ const categoryNames: Record<Category, string> = {
   stay: "Place to stay",
   recipe: "Recipe",
   wine: "Wine",
+  restaurant: "Restaurant",
   experience: "Experience",
   trip: "Trip / collection",
   goal: "Fitness goal",
@@ -97,7 +98,7 @@ const pages: Record<
     title: "A table set for two.",
     eyebrow: "OUR TABLE",
     desc: "Recipes to make, bottles to open, evenings to remember.",
-    cats: ["recipe", "wine"],
+    cats: ["recipe", "wine", "restaurant"],
     add: "recipe",
   },
   fitness: {
@@ -232,6 +233,7 @@ function Modal({
   return (
     <dialog
       ref={ref}
+      aria-label={title}
       onCancel={onClose}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();

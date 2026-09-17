@@ -1889,6 +1889,13 @@ textarea {
   .modal-footer > span {
     display: none;
   }
+  .modal-footer {
+    flex-wrap: wrap;
+  }
+  .modal-footer > .text-button {
+    width: 100%;
+    justify-content: center;
+  }
   .modal-footer .primary {
     width: 100%;
   }

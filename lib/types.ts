@@ -4,6 +4,7 @@ export type Category =
   | "summit"
   | "stay"
   | "recipe"
+  | "restaurant"
   | "wine"
   | "experience"
   | "trip"
