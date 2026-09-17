@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.env*
+!.env.example
+/Photos/
+/private/
+data/local-store.json
+work/
+.DS_Store
+
+.next-dev/
+*.tsbuildinfo
+
+data/initial-store.json
+data/inspirations.json
+supabase/seed.sql

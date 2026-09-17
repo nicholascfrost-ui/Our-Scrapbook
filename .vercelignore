@@ -1,0 +1,11 @@
+.git
+Photos
+private
+work
+data/local-store.json
+data/initial-store.json
+data/inspirations.json
+supabase/seed.sql
+.env*
+.next
+.next-dev
