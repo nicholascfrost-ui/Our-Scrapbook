@@ -149,6 +149,7 @@ function Photo({
   const token = useContext(TokenContext);
   const [src, setSrc] = useState("");
   useEffect(() => {
+    setSrc("");
     let live = true;
     let u = "";
     fetch("/api/photos/" + name, {
@@ -159,6 +160,7 @@ function Photo({
         return r.blob();
       })
       .then((b) => {
+        if (!live) return;
         u = URL.createObjectURL(b);
         if (live) setSrc(u);
       })
@@ -169,7 +171,7 @@ function Photo({
     };
   }, [name, token]);
   return src ? (
-    <img className={className} src={src} alt={alt} />
+    <img className={className} src={src} alt={alt} decoding="async" />
   ) : (
     <div className={"photo-placeholder " + className}>
       <Camera size={24} />
@@ -1066,6 +1068,24 @@ export default function OurLists() {
     </TokenContext.Provider>
   );
 }
+function PhotoCredit({ credit }: { credit: Item["photoAttribution"] }) {
+  if (!credit || !/^https?:\/\//i.test(credit.sourceUrl)) return null;
+  return (
+    <details className="photo-credit">
+      <summary>Photo source</summary>
+      <p>{credit.context || "Reference photo"}{credit.author ? ` · ${credit.author}` : ""}</p>
+      <a href={credit.sourceUrl} target="_blank" rel="noopener noreferrer">View original photo ↗</a>
+      {credit.license && (
+        <p>
+          {credit.licenseUrl && /^https?:\/\//i.test(credit.licenseUrl) ? (
+            <a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer">{credit.license}</a>
+          ) : credit.license}
+          {" · Resized; cropped for display."}
+        </p>
+      )}
+    </details>
+  );
+}
 function ItemCard({
   item: i,
   onOpen,
@@ -1157,6 +1177,7 @@ function ItemCard({
           </div>
         </div>
       </button>
+      {i.photo && <PhotoCredit credit={i.photoAttribution} />}
     </article>
   );
 }
@@ -1230,7 +1251,7 @@ function Editor({
       });
       const d = await r.json();
       if (!r.ok) throw Error(d.error);
-      set("photo", d.name);
+      setDraft((previous) => ({ ...previous, photo: d.name, photoAttribution: undefined }));
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Could not add photo.");
     } finally {
@@ -1512,6 +1533,7 @@ function Editor({
               </label>
             </div>
           </div>
+          {draft.photo && <div className="full"><PhotoCredit credit={draft.photoAttribution} /></div>}
           {showPhotos && (
             <div className="full photo-choices">
               {Array.from({ length: 24 }, (_, i) => (
@@ -1520,7 +1542,7 @@ function Editor({
                   key={i}
                   aria-label={"Choose photo " + (i + 1)}
                   onClick={() => {
-                    set("photo", "photo-" + i + ".jpg");
+                    setDraft((previous) => ({ ...previous, photo: "photo-" + i + ".jpg", photoAttribution: undefined }));
                     setShowPhotos(false);
                   }}
                 >

@@ -1961,3 +1961,16 @@ textarea {
 .brand:hover {
   color: #fffbed;
 }
+
+.photo-credit {
+  padding: 0 22px 16px;
+  color: var(--muted, #756c59);
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.photo-credit summary { cursor: pointer; width: fit-content; letter-spacing: .03em; }
+.photo-credit p { margin: 6px 0; font-size: inherit; }
+.photo-credit a { color: inherit; text-underline-offset: 3px; }
+.editor-grid > .full > .photo-credit { padding: 0; }

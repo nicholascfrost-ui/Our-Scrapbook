@@ -23,6 +23,14 @@ export type Item = {
   location?: string;
   date?: string;
   photo?: string;
+  photoAttribution?: {
+    sourceUrl: string;
+    author?: string;
+    license?: string;
+    licenseUrl?: string;
+    context?: string;
+    caption?: string;
+  };
   distance?: number;
   gain?: number;
   current?: number;
