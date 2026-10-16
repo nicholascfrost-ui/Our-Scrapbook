@@ -275,6 +275,7 @@ export default function OurLists() {
     [authNeeded, setAuthNeeded] = useState(false),
     [email, setEmail] = useState(""),
     [authMessage, setAuthMessage] = useState(""),
+    [authSending, setAuthSending] = useState(false),
     [gallery, setGallery] = useState(false),
     [quick, setQuick] = useState<Item | null>(null);
   const load = useCallback(async () => {
@@ -284,6 +285,7 @@ export default function OurLists() {
       });
       const d = await r.json();
       if (r.status === 401) {
+        setStore(null);
         setAuthNeeded(true);
         return;
       }
@@ -398,17 +400,27 @@ export default function OurLists() {
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
-                const { error } = await client.auth.signInWithOtp({
-                  email,
-                  options: {
-                    shouldCreateUser: false,
-                    emailRedirectTo: location.origin,
-                  },
-                });
-                setAuthMessage(
-                  error?.message ||
-                    "Check your email for your private sign-in link.",
-                );
+                if (authSending) return;
+                setAuthSending(true);
+                setAuthMessage("");
+                setError("");
+                try {
+                  const { error: signInError } = await client.auth.signInWithOtp({
+                    email: email.trim(),
+                    options: {
+                      shouldCreateUser: false,
+                      emailRedirectTo: location.origin,
+                    },
+                  });
+                  if (signInError) throw signInError;
+                  setAuthMessage("Check your email for your private sign-in link. Check spam too, and open the newest link on this device.");
+                } catch (e) {
+                  setAuthMessage(e instanceof Error && e.message !== "Failed to fetch"
+                    ? e.message
+                    : "We couldn’t send your sign-in link. Check your connection and try again.");
+                } finally {
+                  setAuthSending(false);
+                }
               }}
             >
               <label>
@@ -420,8 +432,8 @@ export default function OurLists() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
-              <button className="primary">
-                Send sign-in link <Mail size={17} />
+              <button className="primary" disabled={authSending}>
+                {authSending ? "Sending your link…" : "Send sign-in link"} <Mail size={17} />
               </button>
               <p role="status">{authMessage}</p>
             </form>
